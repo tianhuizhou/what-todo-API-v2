@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  name        String    @db.VarChar(255)
+  description String?   @db.VarChar(255) @default("")
+  background  String    @default("")
+  visibility  String    @default("public")
+  favorite    Boolean   @default(false)
+  boards      Board[]
+  board_order Json?     @default("[]")
+  session_uid String    @default(uuid())
+}
+
+model Board {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  theme       String?   @default("")
+  tasks       Task[]
+  task_order  Json?     @default("[]")
+  project     Project   @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  project_id  Int
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  priority    String?
+  description String?   @db.VarChar(255) @default("")
+  tags        Tag[]
+  users       User[]
+  board       Board     @relation(fields: [board_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  board_id    Int
+  estimated_time Int?   @default(0)
+  due_date    String?   @default("")
+  is_completed Boolean  @default(false)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+}
+
+model Tag {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(20)
+  theme       String?   @default("")
+  tasks       Task[]
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  email       String    @db.VarChar(255)
+  user_uid    String    @db.VarChar(255) @unique
+  photo_b64   String    @db.Text @default("")
+  tasks       Task[]
+}
