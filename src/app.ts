@@ -8,10 +8,7 @@ const app = express()
 
 const admin = require('firebase-admin')
 
-console.log(process.env.NODE_ENV)
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIAL || '')
-
-console.log(serviceAccount)
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

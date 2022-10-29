@@ -45,6 +45,9 @@ class TagRepository {
       where: {
         id: tag_id,
       },
+      include: {
+        tasks: true,
+      },
     })
   }
 

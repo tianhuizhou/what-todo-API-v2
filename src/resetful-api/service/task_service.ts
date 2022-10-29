@@ -53,7 +53,7 @@ class TaskService {
     if (dto.tags) payload.tags = { set: dto.tags }
     const task = await TaskRepository.update(id, payload)
     if (!task) throw new BadRequestRestException('Task')
-    await ProjectService.upsertFirebaseProject(task.board.project_id)
+    ProjectService.upsertFirebaseProject(task.board.project_id).catch()
     return task
   }
 
@@ -78,7 +78,7 @@ class TaskService {
   static async assignTaskToUser(id: number, dto: { user: number }) {
     const task = await TaskRepository.assignTask(id, dto.user)
     if (!task) throw new BadRequestRestException('Task')
-    await ProjectService.upsertFirebaseProject(task.board.project_id)
+    ProjectService.upsertFirebaseProject(task.board.project_id).catch()
     /* TODO: Also trigger Email notification for */
     return task
   }
@@ -86,7 +86,7 @@ class TaskService {
   static async unassignTaskFromUser(id: number, dto: { user: number }) {
     const task = await TaskRepository.unassignTask(id, dto.user)
     if (!task) throw new BadRequestRestException('Task')
-    await ProjectService.upsertFirebaseProject(task.board.project_id)
+    ProjectService.upsertFirebaseProject(task.board.project_id).catch()
     return task
   }
 }

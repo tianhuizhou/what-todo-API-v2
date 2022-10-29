@@ -5,7 +5,6 @@ import { BadRequestRestException, NotFoundRestException } from '../../helper/err
 const ProjectRepository = require('../repository/project_repository')
 const pick = require('lodash/pick')
 const firestore = require('firebase-admin').firestore()
-const functions = require('firebase-functions')
 
 class ProjectService {
   static async getProjectList() {
@@ -28,13 +27,7 @@ class ProjectService {
     const payload = pick(dto, ['name', 'visibility', 'description', 'favorite', 'background'])
     const project = await ProjectRepository.create(payload)
     if (!project) throw new BadRequestRestException('Project')
-    await ProjectService.upsertFirebaseProject(project.id)
-      .then(() => {
-        functions.logger.log('upsertFirebaseProject successfully')
-      })
-      .catch(() => {
-        functions.logger.log('upsertFirebaseProject failed')
-      })
+    ProjectService.upsertFirebaseProject(project.id).catch()
     return project
   }
 
@@ -52,13 +45,13 @@ class ProjectService {
     const payload = pick(dto, ['name', 'visibility', 'description', 'favorite', 'board_order', 'background'])
     const project = await ProjectRepository.update(id, payload)
     if (!project) throw new BadRequestRestException('Project')
-    await ProjectService.upsertFirebaseProject(project.id)
+    ProjectService.upsertFirebaseProject(project.id).catch()
     return project
   }
 
   static async deleteProject(id: number) {
     const project = await ProjectService.getProject(id)
-    if (project.session_uid) await ProjectService.deleteFirebaseProject(project.session_uid)
+    if (project.session_uid) ProjectService.deleteFirebaseProject(project.session_uid).catch()
     await ProjectRepository.delete(project.id)
   }
 
