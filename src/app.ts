@@ -21,7 +21,7 @@ app.use(express.json())
 
 // Middleware
 const auth_middleware = require('./middleware/auth_firebase')
-if (process.env.NODE_ENV !== 'production') app.use(auth_middleware)
+if (process.env.NODE_ENV == 'production') app.use(auth_middleware)
 
 // Routes
 const users_router = require('./resetful-api/route/users')
