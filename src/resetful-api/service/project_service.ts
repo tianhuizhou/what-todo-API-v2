@@ -7,24 +7,33 @@ const pick = require('lodash/pick')
 const firestore = require('firebase-admin').firestore()
 
 class ProjectService {
-  static async getProjectList() {
-    return await ProjectRepository.findAll()
+  static async getProjectList(user_uid: string) {
+    const project_list = await ProjectRepository.findAll()
+    // only return public and the private projects that belong to the user
+    return project_list.filter(
+      (item: any) => item.visibility === 'public' || (item.visibility === 'private' && item.owner_uid === user_uid),
+    )
   }
 
   static async getProject(id: number) {
     const project = await ProjectRepository.findById(id)
     if (!project) throw new NotFoundRestException('Project')
+    ProjectService.upsertFirebaseProject(project.id).catch()
     return project
   }
 
-  static async createProject(dto: {
-    name: string
-    visibility: string
-    description: string
-    favorite: boolean
-    background: string
-  }) {
+  static async createProject(
+    dto: {
+      name: string
+      visibility: string
+      description: string
+      favorite: boolean
+      background: string
+    },
+    user_uid: string,
+  ) {
     const payload = pick(dto, ['name', 'visibility', 'description', 'favorite', 'background'])
+    payload.owner_uid = user_uid
     const project = await ProjectRepository.create(payload)
     if (!project) throw new BadRequestRestException('Project')
     ProjectService.upsertFirebaseProject(project.id).catch()

@@ -41,5 +41,5 @@ const error_handler = require('./middleware/error_handler')
 app.use(error_handler)
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`What-todo app listening on port ${port}`)
 })

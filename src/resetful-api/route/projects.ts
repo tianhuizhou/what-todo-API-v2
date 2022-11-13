@@ -5,8 +5,8 @@ const ProjectService = require('../service/project_service')
 
 /* GET */
 // Get all project
-project_router.route('/').get(async (req: Request, res: Response) => {
-  const project_list = await ProjectService.getProjectList()
+project_router.route('/').get(async (req: any, res: Response) => {
+  const project_list = await ProjectService.getProjectList(req.user.uid ?? '')
   res.status(200).json({ 'data': project_list })
 })
 
@@ -18,8 +18,9 @@ project_router.route('/:id').get(async (req: Request, res: Response) => {
 
 /* POST */
 // Create new project
-project_router.route('/').post(async (req: Request, res: Response) => {
-  const project = await ProjectService.createProject(req.body)
+project_router.route('/').post(async (req: any, res: Response) => {
+  const user_uid: string = req.user.uid ?? ''
+  const project = await ProjectService.createProject(req.body, user_uid)
   res.status(201).json({ 'data': project })
 })
 

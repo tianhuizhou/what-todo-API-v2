@@ -33,6 +33,7 @@ class ProjectRepository {
     description: string
     favorite: boolean
     background: string
+    owner_uid: string
   }) {
     return await prisma.project.create({
       data: { ...project },
@@ -48,6 +49,7 @@ class ProjectRepository {
       favorite: boolean
       board_order: []
       background: string
+      owner_uid: string
     }>,
   ) {
     return await prisma.project.update({

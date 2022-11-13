@@ -24,6 +24,7 @@ model Project {
   boards      Board[]
   board_order Json?     @default("[]")
   session_uid String    @default(uuid())
+  owner_uid   String    @default("")
 }
 
 model Board {
