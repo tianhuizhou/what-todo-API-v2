@@ -1,4 +1,5 @@
 import 'express-async-errors'
+import { Request, Response } from 'express'
 require('dotenv').config()
 
 const express = require('express')
@@ -19,6 +20,11 @@ app.use(cors())
 
 app.use(express.json())
 
+// An open API that Only for AWS ELB health check
+// otherwise, ELB health check will always fail since endpoints are required Authentication
+// Health Check
+app.get('/api/__healthcheck', (_: Request, response: Response) => response.status(200).end(''))
+
 // Middleware
 const auth_middleware = require('./middleware/auth_firebase')
 if (process.env.NODE_ENV == 'production') app.use(auth_middleware)
@@ -30,11 +36,11 @@ const board_router = require('./resetful-api/route/boards')
 const task_router = require('./resetful-api/route/tasks')
 const tag_router = require('./resetful-api/route/tags')
 
-app.use('/users', users_router)
-app.use('/projects', projects_router)
-app.use('/boards', board_router)
-app.use('/tasks', task_router)
-app.use('/tags', tag_router)
+app.use('/api/users', users_router)
+app.use('/api/projects', projects_router)
+app.use('/api/boards', board_router)
+app.use('/api/tasks', task_router)
+app.use('/api/tags', tag_router)
 
 // Error handler middleware
 const error_handler = require('./middleware/error_handler')
