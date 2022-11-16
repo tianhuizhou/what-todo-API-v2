@@ -5,7 +5,7 @@
 const admin = require('firebase-admin')
 
 const validateFirebaseIdToken = async (
-  req: { headers: { authorization: string }; cookies: { __session: unknown }; user: unknown },
+  req: { headers: { authorization: string }; cookies: { __session: unknown }; user: unknown; baseUrl: string },
   res: { status: (arg0: number) => { (): unknown; new (): unknown; send: { (arg0: string): void; new (): unknown } } },
   next: () => void,
 ) => {
@@ -21,6 +21,7 @@ const validateFirebaseIdToken = async (
       'Authorization: Bearer <Firebase ID Token>',
       'or by passing a "__session" cookie.',
     )
+    console.error('relative url:', req.baseUrl)
     res.status(403).send('Unauthorized')
     return
   }

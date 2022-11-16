@@ -25,9 +25,8 @@ app.use(express.json())
 // Health Check
 app.get('/api/__healthcheck', (_: Request, response: Response) => response.status(200).end(''))
 
-// Middleware
+// Auth middleware by Google Firebase Authentication
 const auth_middleware = require('./middleware/auth_firebase')
-if (process.env.NODE_ENV == 'production') app.use(auth_middleware)
 
 // Routes
 const users_router = require('./resetful-api/route/users')
@@ -36,11 +35,11 @@ const board_router = require('./resetful-api/route/boards')
 const task_router = require('./resetful-api/route/tasks')
 const tag_router = require('./resetful-api/route/tags')
 
-app.use('/api/users', users_router)
-app.use('/api/projects', projects_router)
-app.use('/api/boards', board_router)
-app.use('/api/tasks', task_router)
-app.use('/api/tags', tag_router)
+app.use('/api/users', auth_middleware, users_router)
+app.use('/api/projects', auth_middleware, projects_router)
+app.use('/api/boards', auth_middleware, board_router)
+app.use('/api/tasks', auth_middleware, task_router)
+app.use('/api/tags', auth_middleware, tag_router)
 
 // Error handler middleware
 const error_handler = require('./middleware/error_handler')
